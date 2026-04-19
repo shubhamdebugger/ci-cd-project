@@ -6,10 +6,30 @@ on:
       - main
 
 jobs:
-  deploy:
+  validate-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Build (if exists)
+        run: npm run build --if-present
+
+      - name: Start App Health Check
+        run: |
+          node index.js &
+          sleep 5
+          pgrep node
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -18,7 +38,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/ci-cd-project
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
             npm install
-            npm run build
             pm2 restart sampleci
