@@ -14,6 +14,6 @@ app.use("/api/auth", authRoutes);
 app.get('/', (req, res) => {
   res.send('Deployment successful!');
 });
-app.listen(port, () => {
-  console.log(`Deployment app listening at http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Deployment app listening at http://localhost:${port}`);
+// });
